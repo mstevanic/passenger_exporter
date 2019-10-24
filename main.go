@@ -18,6 +18,7 @@ import (
 	"golang.org/x/net/html/charset"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
 )
@@ -323,8 +324,8 @@ func main() {
 	flag.Parse()
 
 	if *pidFile != "" {
-		prometheus.MustRegister(prometheus.NewProcessCollectorPIDFn(
-			func() (int, error) {
+		prometheus.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
+			PidFn: func() (int, error) {
 				content, err := ioutil.ReadFile(*pidFile)
 				if err != nil {
 					return 0, fmt.Errorf("error reading pidfile %q: %s", *pidFile, err)
@@ -335,13 +336,13 @@ func main() {
 				}
 				return value, nil
 			},
-			namespace),
+			Namespace: namespace}),
 		)
 	}
 
 	prometheus.MustRegister(NewExporter(*cmd, *timeout))
 
-	http.Handle(*metricsPath, prometheus.Handler())
+	http.Handle(*metricsPath, promhttp.Handler())
 
 	log.Infoln("starting passenger_exporter_nginx", version.Info())
 	log.Infoln("build context", version.BuildContext())
