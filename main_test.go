@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	//	"flag"
 	"math"
 	"os"
 	"reflect"
@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-var golden bool
+//var golden bool
 
 func init() {
-	flag.BoolVar(&golden, "golden", false, "Write test results to fixture files.")
-	flag.Parse()
+	//	flag.BoolVar(&golden, "golden", false, "Write test results to fixture files.")
+	//	flag.Parse()
 }
 
 func TestParsing(t *testing.T) {
