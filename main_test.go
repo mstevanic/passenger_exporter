@@ -70,6 +70,9 @@ func TestParsing(t *testing.T) {
 					t.Fatalf("%s: incorrect process_group_id: wanted %s, got %s", name, want, got)
 				}
 			}
+			if sg.Group.ResistingDeploymentError == 0 {
+				t.Fatalf("%v: failed to parse resisting deployment error", name)
+			}
 		}
 	}
 }

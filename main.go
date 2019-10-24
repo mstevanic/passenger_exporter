@@ -53,9 +53,10 @@ type Exporter struct {
 	appCount            *prometheus.Desc
 
 	// App metrics.
-	appQueue         *prometheus.Desc
-	appGroupQueue    *prometheus.Desc
-	appProcsSpawning *prometheus.Desc
+	appQueue                 *prometheus.Desc
+	appGroupQueue            *prometheus.Desc
+	appProcsSpawning         *prometheus.Desc
+	resistingDeploymentError *prometheus.Desc
 
 	// Process metrics.
 	requestsProcessed *prometheus.Desc
@@ -124,7 +125,12 @@ func NewExporter(cmd string, timeout time.Duration) *Exporter {
 			[]string{"name"},
 			nil,
 		),
-		requestsProcessed: prometheus.NewDesc(
+		resistingDeploymentError: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "resisting_deployment_error"),
+			"Resisting deployment error.",
+			[]string{"name"},
+			nil,
+		), requestsProcessed: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "requests_processed_total"),
 			"Number of processes served by a process.",
 			[]string{"name", "id"},
@@ -168,6 +174,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(e.appProcsSpawning, prometheus.GaugeValue, parseFloat(sg.Group.ProcessesSpawning), sg.Name)
 
 		ch <- prometheus.MustNewConstMetric(e.appGroupQueue, prometheus.GaugeValue, parseFloat(sg.Group.GetWaitListSize), sg.Group.Name, sg.Group.Default)
+		ch <- prometheus.MustNewConstMetric(e.resistingDeploymentError, prometheus.GaugeValue, float64(sg.Group.ResistingDeploymentError), sg.Name)
 
 		// Update process identifiers map.
 		processIdentifiers = updateProcesses(processIdentifiers, sg.Group.Processes)
@@ -226,6 +233,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.appQueue
 	ch <- e.appGroupQueue
 	ch <- e.appProcsSpawning
+	ch <- e.resistingDeploymentError
 	ch <- e.requestsProcessed
 	ch <- e.procStartTime
 	ch <- e.procMemory
@@ -311,6 +319,13 @@ func updateProcesses(old map[string]int, processes []Process) map[string]int {
 	}
 
 	return updated
+}
+
+func (c *BoolIfElementPresent) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var v string
+	d.DecodeElement(&v, &start)
+	*c = 1.0
+	return nil
 }
 
 func main() {

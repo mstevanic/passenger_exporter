@@ -19,27 +19,30 @@ type SuperGroup struct {
 }
 
 type Group struct {
-	Environment           string    `xml:"environment"`
-	DisabledProcessCount  string    `xml:"disabled_process_count"`
-	UID                   string    `xml:"uid"`
-	GetWaitListSize       string    `xml:"get_wait_list_size"`
-	CapacityUsed          string    `xml:"capacity_used"`
-	Name                  string    `xml:"name"`
-	AppType               string    `xml:"app_type"`
-	AppRoot               string    `xml:"app_root"`
-	User                  string    `xml:"user"`
-	ComponentName         string    `xml:"component_name"`
-	LifeStatus            string    `xml:"life_status"`
-	UUID                  string    `xml:"uuid"`
-	Default               string    `xml:"default,attr"`
-	DisablingProcessCount string    `xml:"disabling_process_count"`
-	EnabledProcessCount   string    `xml:"enabled_process_count"`
-	DisableWaitListSize   string    `xml:"disable_wait_list_size"`
-	GID                   string    `xml:"gid"`
-	ProcessesSpawning     string    `xml:"processes_being_spawned"`
-	Options               Options   `xml:"options"`
-	Processes             []Process `xml:"processes>process"`
+	Environment              string               `xml:"environment"`
+	DisabledProcessCount     string               `xml:"disabled_process_count"`
+	UID                      string               `xml:"uid"`
+	GetWaitListSize          string               `xml:"get_wait_list_size"`
+	CapacityUsed             string               `xml:"capacity_used"`
+	Name                     string               `xml:"name"`
+	AppType                  string               `xml:"app_type"`
+	AppRoot                  string               `xml:"app_root"`
+	User                     string               `xml:"user"`
+	ComponentName            string               `xml:"component_name"`
+	LifeStatus               string               `xml:"life_status"`
+	UUID                     string               `xml:"uuid"`
+	Default                  string               `xml:"default,attr"`
+	DisablingProcessCount    string               `xml:"disabling_process_count"`
+	EnabledProcessCount      string               `xml:"enabled_process_count"`
+	DisableWaitListSize      string               `xml:"disable_wait_list_size"`
+	GID                      string               `xml:"gid"`
+	ProcessesSpawning        string               `xml:"processes_being_spawned"`
+	ResistingDeploymentError BoolIfElementPresent `xml:"resisting_deployment_error"`
+	Options                  Options              `xml:"options"`
+	Processes                []Process            `xml:"processes>process"`
 }
+
+type BoolIfElementPresent float64
 
 type Process struct {
 	CodeRevision        string `xml:"code_revision"`
